@@ -89,4 +89,84 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     observer.observe(trailerSection);
+
+
+    // Scroll Reveal
+    const revealElements = document.querySelectorAll('.scroll-reveal');
+
+    const revealOnScroll = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                revealOnScroll.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.2
+    });
+
+    revealElements.forEach(el => {
+        revealOnScroll.observe(el);
+    });
+
+    // Easter Egg - Konami Code
+    const konamiCode = [
+        "ArrowUp", "ArrowUp",
+        "ArrowDown", "ArrowDown",
+        "ArrowLeft", "ArrowRight",
+        "ArrowLeft", "ArrowRight",
+        "b", "a"
+    ];
+
+    let inputSequence = [];
+
+    document.addEventListener('keydown', function (e) {
+        inputSequence.push(e.key);
+        if (inputSequence.length > konamiCode.length) {
+            inputSequence.shift();
+        }
+
+        if (inputSequence.join('') === konamiCode.join('')) {
+            triggerEasterEgg();
+            inputSequence = [];
+        }
+    });
+
+    function triggerEasterEgg() {
+        // Add glitch effect to the body
+        document.body.classList.add('glitch-mode');
+    
+        // Add sound effect
+        // TODO : Ajouter le son de glitch
+        const audio = new Audio('assets/sounds/glitch-secret.mp3');
+        audio.volume = 0.5;
+        audio.play();
+    
+        // Add overlay with text
+        const overlay = document.createElement('div');
+        overlay.className = 'glitch-overlay';
+        overlay.innerHTML = `
+            <div class="glitch-text">⚠️ ACCÈS TEMPORAIRE AU MULTIVERS DE KARE...</div>
+        `;
+        document.body.appendChild(overlay);
+    
+        // Remove the overlay and glitch effect after 5 seconds
+        setTimeout(() => {
+            document.body.classList.remove('glitch-mode');
+            overlay.remove();
+            audio.pause();
+        }, 5000);
+    }   
+    
+    // SCROLL BAR
+    window.addEventListener('scroll', () => {
+        const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+        document.getElementById('scroll-bar').style.width = `${scrolled}%`;
+    });
+    
+    // ACCESSIBILITY
+    const toggleBtn = document.getElementById('accessibility-toggle');
+    toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('access-mode');
+    });
 });
